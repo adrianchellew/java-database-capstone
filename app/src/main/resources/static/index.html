@@ -102,3 +102,66 @@ and triggers modal-based login functionality.
     * Properly close all opened tags to complete the document structure.
 
  -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Metadata and Resources -->
+
+  <!-- Set character encoding -->
+  <meta charset="UTF-8" />
+
+  <!-- Set the page title -->
+  <title>Select Role</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../assets/images/logo/Logo.png" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../assets/css/index.css" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+
+  <!-- JavaScript Files with defer -->
+  <script src="../js/util.js" defer></script>
+  <script src="../js/render.js" defer></script>
+  <script src="../js/components/header.js" defer></script>
+  <script src="../js/components/footer.js" defer></script>
+</head>
+<body>
+  <!-- Main container -->
+  <div class="container">
+    <!-- Wrapper for structure -->
+    <div class="wrapper">
+
+      <!-- Header placeholder -->
+      <div id="header"></div>
+
+      <!-- Main content -->
+      <main>
+        <h2>Select Your Role</h2>
+        <div class="role-buttons">
+          <button id="admin-btn">Admin</button>
+          <button id="patient-btn">Patient</button>
+          <button id="doctor-btn">Doctor</button>
+        </div>
+      </main>
+
+      <!-- Footer placeholder -->
+      <div id="footer"></div>
+
+    </div>
+  </div>
+
+  <!-- Modal Structure -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-button" id="modal-close">&times;</span>
+      <div id="modal-body">
+        <!-- Dynamic content will be injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page-specific Logic Module -->
+  <script type="module" src="../js/index.js" defer></script>
+</body>
+</html>

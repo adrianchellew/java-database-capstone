@@ -122,4 +122,52 @@
 
   16. **Render the Header**: Finally, the `renderHeader()` function is called to initialize the header rendering process when the page loads.
 */
-   
+
+function renderHeader() {
+  const headerDiv = document.getElementById("header");
+
+  if (window.location.pathname.endsWith("/")) {
+    localStorage.removeItem("userRole");
+    headerDiv.innerHTML = `
+      <header class="header">
+        <div class="logo-section">
+          <img src="../assets/images/logo/logo.png" alt="Hospital CRM Logo" class="logo-img">
+          <span class="logo-title">Hospital CMS</span>
+        </div>
+      </header>`;
+    return;
+  }
+
+  const role = localStorage.getItem("userRole");
+  const token = localStorage.getItem("token");
+
+  let headerContent = `
+    <header class="header">
+      <div class="logo-section">
+        <img src="../assets/images/logo/logo.png" alt="Hospital CRM Logo" class="logo-img">
+        <span class="logo-title">Hospital CMS</span>
+      </div>
+      <nav class="nav-links">
+  `;
+
+  if (token) {
+    if (role === 'admin') {
+      headerContent += `<button id="addDoctorBtn" class="add-btn">Add Doctor</button>`;
+    }
+    headerContent += `<a href="#" onclick="handleLogout()">Logout</a>`;
+  } else {
+    headerContent += `
+      <a href="#" id="login-link">Login</a>
+      <a href="#" id="signup-link">Sign Up</a>
+    `;
+  }
+
+  headerContent += `
+      </nav>
+    </header>
+  `;
+
+  headerDiv.innerHTML = headerContent;
+}
+
+document.addEventListener("DOMContentLoaded", renderHeader);

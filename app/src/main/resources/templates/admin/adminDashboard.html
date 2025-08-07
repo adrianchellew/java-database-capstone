@@ -107,3 +107,83 @@ with search, filter, and modal functionality.
 
  -->
 
+<!-- adminDashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Metadata -->
+    <meta charset="UTF-8">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" th:href="@{/assets/images/logo/logo.png}" />
+
+    <!-- Page Title -->
+    <title>Admin Dashboard</title>
+
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}" />
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}" />
+
+    <!-- JavaScript Files (deferred) -->
+    <script defer th:src="@{/assets/js/render.js}"></script>
+    <script defer th:src="@{/assets/js/util.js}"></script>
+    <script defer th:src="@{/assets/js/header.js}"></script>
+    <script defer th:src="@{/assets/js/footer.js}"></script>
+</head>
+<body onload="renderContent()">
+<!-- Container -->
+<div class="container">
+
+    <!-- Wrapper -->
+    <div class="wrapper">
+
+        <!-- Header Placeholder -->
+        <div id="header"></div>
+
+        <!-- Main Section -->
+        <main class="main-content">
+
+            <!-- Search Bar -->
+            <input type="text" id="searchBar" placeholder="Search doctors..." />
+
+            <!-- Filter Dropdowns -->
+            <select id="timeFilter">
+                <option value="">All Times</option>
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+            </select>
+
+            <select id="specialtyFilter">
+                <option value="">All Specialties</option>
+                <option value="Cardiologist">Cardiologist</option>
+                <option value="Dentist">Dentist</option>
+                <option value="Dermatologist">Dermatologist</option>
+                <option value="Neurologist">Neurologist</option>
+                <!-- Add more specialties as needed -->
+            </select>
+
+            <!-- Content Display Area -->
+            <div id="content"></div>
+
+        </main>
+
+        <!-- Footer Placeholder -->
+        <div id="footer"></div>
+
+    </div>
+</div>
+
+<!-- Modal Structure -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" id="closeModal">&times;</span>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<!-- Page-Specific JavaScript Modules -->
+<script type="module" src="../../static/js/adminDashboard.js" defer></script>
+<script type="module" src="../../static/js/doctorCard.js" defer></script>
+</body>
+</html>
+
