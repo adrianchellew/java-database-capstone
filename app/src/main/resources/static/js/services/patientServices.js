@@ -1,97 +1,141 @@
-// patientServices
 import { API_BASE_URL } from "../config/config.js";
-const PATIENT_API = API_BASE_URL + '/patient'
 
+// Define constants for the API endpoints
+const PATIENT_API = `${API_BASE_URL}/patients`;
+const APPOINTMENT_API = `${API_BASE_URL}/appointments`;
 
-//For creating a patient in db
-export async function patientSignup(data) {
+/**
+ * Registers a new patient.
+ * @param {object} patientData - The patient data for registration.
+ * @returns {Promise<object>} - The registered patient data.
+ */
+export async function patientSignup(patientData) {
   try {
-    const response = await fetch(`${PATIENT_API}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify(data)
-      }
-    );
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.message);
-    }
-    return { success: response.ok, message: result.message }
-  }
-  catch (error) {
-    console.error("Error :: patientSignup :: ", error)
-    return { success: false, message: error.message }
-  }
-}
-
-//For logging in patient
-export async function patientLogin(data) {
-  console.log("patientLogin :: ", data)
-  return await fetch(`${PATIENT_API}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
-
-
-}
-
-// For getting patient data (name ,id , etc ). Used in booking appointments
-export async function getPatientData(token) {
-  try {
-    const response = await fetch(`${PATIENT_API}/${token}`);
-    const data = await response.json();
-    if (response.ok) return data.patient;
-    return null;
-  } catch (error) {
-    console.error("Error fetching patient details:", error);
-    return null;
-  }
-}
-
-// the Backend API for fetching the patient record(visible in Doctor Dashboard) and Appointments (visible in Patient Dashboard) are same based on user(patient/doctor).
-export async function getPatientAppointments(id, token, user) {
-  try {
-    const response = await fetch(`${PATIENT_API}/${id}/${user}/${token}`);
-    const data = await response.json();
-    console.log(data.appointments)
-    if (response.ok) {
-      return data.appointments;
-    }
-    return null;
-  }
-  catch (error) {
-    console.error("Error fetching patient details:", error);
-    return null;
-  }
-}
-
-export async function filterAppointments(condition, name, token) {
-  try {
-    const response = await fetch(`${PATIENT_API}/filter/${condition}/${name}/${token}`, {
-      method: "GET",
+    const response = await fetch(`${PATIENT_API}/signup`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(patientData),
     });
-
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-
-    } else {
-      console.error("Failed to fetch doctors:", response.statusText);
-      return { appointments: [] };
-
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to register patient.");
     }
+    return response.json();
   } catch (error) {
-    console.error("Error:", error);
-    alert("Something went wrong!");
-    return { appointments: [] };
+    console.error("Error in patientSignup:", error);
+    throw error;
+  }
+}
+
+/**
+ * Logs in a patient and retrieves a token.
+ * @param {string} email - The patient's email.
+ * @param {string} password - The patient's password.
+ * @returns {Promise<object>} - An object containing the authentication token.
+ */
+export async function patientLogin(email, password) {
+  try {
+    const response = await fetch(`${PATIENT_API}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Invalid credentials.");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error in patientLogin:", error);
+    throw error;
+  }
+}
+
+/**
+ * Books an appointment for a patient.
+ * @param {object} appointmentData - The appointment details.
+ * @param {string} token - The patient's authentication token.
+ * @returns {Promise<object>} - The created appointment data.
+ */
+export async function bookAppointment(appointmentData, token) {
+  try {
+    const response = await fetch(APPOINTMENT_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(appointmentData),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to book appointment.");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error in bookAppointment:", error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches all appointments for the current user.
+ * @param {string} token - The user's authentication token.
+ * @param {string} [patientName=null] - Optional patient name to filter by.
+ * @param {string} [date=null] - Optional date to filter by.
+ * @returns {Promise<Array<object>>} - An array of appointment objects.
+ */
+export async function getAllAppointments(token, patientName = null, date = null) {
+  const url = new URL(APPOINTMENT_API);
+  if (patientName) {
+    url.searchParams.append('patientName', patientName);
+  }
+  if (date) {
+    url.searchParams.append('date', date);
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch appointments.");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error in getAllAppointments:", error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches the current patient's data.
+ * @param {string} token - The patient's authentication token.
+ * @returns {Promise<object>} - The patient data.
+ */
+export async function getPatientData(token) {
+  try {
+    const response = await fetch(`${PATIENT_API}/me`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch patient data.");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error in getPatientData:", error);
+    throw error;
   }
 }

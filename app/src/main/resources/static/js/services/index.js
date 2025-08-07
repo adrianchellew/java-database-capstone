@@ -56,3 +56,68 @@
     - Log the error to the console
     - Show a generic error message
 */
+import { renderHeader } from './components/header.js';
+import { renderFooter } from './components/footer.js';
+
+/**
+ * Handles user logout by clearing local storage and redirecting to the root page.
+ * This function is referenced in `header.js` and should be globally accessible.
+ */
+window.handleLogout = function() {
+    localStorage.clear();
+    window.location.href = "/";
+};
+
+/**
+ * Redirects the user to the appropriate dashboard based on their role stored in localStorage.
+ * This is called on page load to maintain the user's session.
+ */
+function redirectToDashboard() {
+    const role = localStorage.getItem("userRole");
+    if (role === "admin") {
+        window.location.href = "/adminDashboard.html";
+    } else if (role === "doctor") {
+        window.location.href = "/doctorDashboard.html";
+    } else if (role === "loggedPatient") {
+        window.location.href = "/patientDashboard.html";
+    }
+}
+
+// Event listeners for role selection and page load
+document.addEventListener("DOMContentLoaded", () => {
+    renderHeader();
+    renderFooter();
+
+    const roleSelectionContainer = document.querySelector(".role-selection-container");
+    if (roleSelectionContainer) {
+        roleSelectionContainer.style.display = "block";
+    }
+
+    const adminBtn = document.getElementById("admin-btn");
+    const doctorBtn = document.getElementById("doctor-btn");
+    const patientBtn = document.getElementById("patient-btn");
+
+    if (adminBtn) {
+        adminBtn.addEventListener("click", () => {
+            localStorage.setItem("userRole", "admin");
+            window.location.href = "/adminDashboard.html";
+        });
+    }
+
+    if (doctorBtn) {
+        doctorBtn.addEventListener("click", () => {
+            localStorage.setItem("userRole", "doctor");
+            window.location.href = "/doctorDashboard.html";
+        });
+    }
+
+    if (patientBtn) {
+        patientBtn.addEventListener("click", () => {
+            localStorage.setItem("userRole", "loggedPatient"); // Change this to 'patient' once patient login is implemented
+            window.location.href = "/patientDashboard.html";
+        });
+    }
+
+    // Check for an existing session and redirect if a role is set
+    redirectToDashboard();
+});

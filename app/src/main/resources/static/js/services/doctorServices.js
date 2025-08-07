@@ -51,3 +51,103 @@
 
    Catch any other errors, alert the user, and return a default empty result
 */
+
+import { API_BASE_URL } from "../config/config.js";
+
+// Define a constant for the doctors API endpoint
+const DOCTOR_API = `${API_BASE_URL}/doctors`;
+
+/**
+ * Fetches the list of all doctors from the API.
+ * @returns {Promise<Array<Object>>} - A promise that resolves with an array of doctor objects.
+ */
+export async function getDoctors() {
+  try {
+    const response = await fetch(DOCTOR_API);
+    if (!response.ok) {
+      throw new Error("Failed to fetch doctors.");
+    }
+    const doctors = await response.json();
+    return doctors;
+  } catch (error) {
+    console.error("Error in getDoctors:", error);
+    throw error;
+  }
+}
+
+/**
+ * Filters the list of doctors based on search criteria.
+ * @param {string} name - The doctor's name to search for.
+ * @param {string} time - The availability time to filter by (AM/PM).
+ * @param {string} specialty - The specialty to filter by.
+ * @returns {Promise<Array<Object>>} - A promise that resolves with a filtered array of doctor objects.
+ */
+export async function filterDoctors(name, time, specialty) {
+  let url = new URL(DOCTOR_API);
+  if (name) url.searchParams.append("name", name);
+  if (time) url.searchParams.append("availability", time);
+  if (specialty) url.searchParams.append("specialization", specialty);
+
+  try {
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      throw new Error("Failed to filter doctors.");
+    }
+    const doctors = await response.json();
+    return doctors;
+  } catch (error) {
+    console.error("Error in filterDoctors:", error);
+    throw error;
+  }
+}
+
+/**
+ * Saves a new doctor to the API.
+ * @param {object} doctor - The doctor object to save.
+ * @param {string} token - The authentication token.
+ * @returns {Promise<Object>} - A promise that resolves with the saved doctor object.
+ */
+export async function saveDoctor(doctor, token) {
+  try {
+    const response = await fetch(DOCTOR_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(doctor),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to save doctor.");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error in saveDoctor:", error);
+    throw error;
+  }
+}
+
+/**
+ * Deletes a doctor from the API.
+ * @param {string} doctorId - The ID of the doctor to delete.
+ * @param {string} token - The authentication token.
+ * @returns {Promise<void>} - A promise that resolves when the deletion is successful.
+ */
+export async function deleteDoctor(doctorId, token) {
+  try {
+    const response = await fetch(`${DOCTOR_API}/${doctorId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to delete doctor.");
+    }
+  } catch (error) {
+    console.error("Error in deleteDoctor:", error);
+    throw error;
+  }
+}

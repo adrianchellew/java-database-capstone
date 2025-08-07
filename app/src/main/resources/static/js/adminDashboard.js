@@ -70,3 +70,150 @@
 
     If saving fails, show an error message
 */
+
+import { openModal } from "./components/modals.js";
+import {
+  getDoctors,
+  filterDoctors,
+  saveDoctor,
+  deleteDoctor,
+} from "./services/doctorServices.js";
+import { createDoctorCard } from "./components/doctorCard.js";
+
+// DOM elements
+const contentDiv = document.getElementById("content");
+const addDoctorBtn = document.getElementById("addDoctorBtn");
+const searchBar = document.getElementById("searchBar");
+const filterTime = document.getElementById("filterTime");
+const filterSpecialty = document.getElementById("filterSpecialty");
+
+/**
+ * Loads all doctor cards from the server and displays them.
+ * @returns {Promise<void>}
+ */
+async function loadDoctorCards() {
+  try {
+    // Clear the current content area
+    contentDiv.innerHTML = "";
+    // Call getDoctors() from the service layer
+    const doctors = await getDoctors();
+    // For each doctor returned, create a card and append it
+    if (doctors && doctors.length > 0) {
+      renderDoctorCards(doctors);
+    } else {
+      contentDiv.innerHTML = "<p>No doctors found.</p>";
+    }
+  } catch (error) {
+    console.error("Error loading doctor cards:", error);
+    contentDiv.innerHTML =
+      "<p>Failed to load doctors. Please try again later.</p>";
+  }
+}
+
+/**
+ * Filters doctors based on search bar and filter dropdown values.
+ * @returns {Promise<void>}
+ */
+async function filterDoctorsOnChange() {
+  const name = searchBar.value || null;
+  const time = filterTime.value || null;
+  const specialty = filterSpecialty.value || null;
+
+  try {
+    // Call filterDoctors from the service
+    const filteredDoctors = await filterDoctors(name, time, specialty);
+    // If doctors are found, render them
+    if (filteredDoctors.length > 0) {
+      renderDoctorCards(filteredDoctors);
+    } else {
+      // If no doctors match, show a message
+      contentDiv.innerHTML = "<p>No doctors found with the given filters.</p>";
+    }
+  } catch (error) {
+    alert("Failed to filter doctors: " + error.message);
+    console.error("Error filtering doctors:", error);
+  }
+}
+
+/**
+ * A helper function to render a list of doctors passed to it.
+ * @param {Array<object>} doctors - The list of doctor objects to render.
+ */
+function renderDoctorCards(doctors) {
+  contentDiv.innerHTML = "";
+  doctors.forEach((doctor) => {
+    const doctorCard = createDoctorCard(doctor);
+    contentDiv.appendChild(doctorCard);
+  });
+}
+
+/**
+ * Handles the form submission to add a new doctor.
+ * This function is called from the modal.
+ * @returns {Promise<void>}
+ */
+window.adminAddDoctor = async function () {
+  const doctorName = document.getElementById("doctorName").value;
+  const doctorEmail = document.getElementById("doctorEmail").value;
+  const doctorPhone = document.getElementById("doctorPhone").value;
+  const doctorPassword = document.getElementById("doctorPassword").value;
+  const doctorSpecialty = document.getElementById("doctorSpecialty").value;
+  const doctorTime = Array.from(
+    document.querySelectorAll('input[name="doctorTime"]:checked')
+  ).map((cb) => cb.value);
+
+  // Retrieve the authentication token from localStorage
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Authentication token not found. Please log in again.");
+    return;
+  }
+
+  // Build a doctor object with the form values
+  const newDoctor = {
+    name: doctorName,
+    email: doctorEmail,
+    phone: doctorPhone,
+    password: doctorPassword,
+    specialization: doctorSpecialty,
+    availability: doctorTime,
+  };
+
+  try {
+    // Call saveDoctor(doctor, token) from the service
+    await saveDoctor(newDoctor, token);
+    // If save is successful, show a success message
+    alert("Doctor added successfully.");
+    // Close the modal and reload the page
+    closeModal();
+    loadDoctorCards(); // Reload the doctor list
+  } catch (error) {
+    // If saving fails, show an error message
+    alert("Failed to add doctor: " + error.message);
+    console.error("Error saving doctor:", error);
+  }
+};
+
+// Attach event listeners
+document.addEventListener("DOMContentLoaded", () => {
+  // Call loadDoctorCards() to fetch and display all doctors
+  loadDoctorCards();
+});
+
+// Attach a click listener to the "Add Doctor" button to open a modal
+if (addDoctorBtn) {
+  addDoctorBtn.addEventListener("click", () => {
+    openModal("addDoctor");
+  });
+}
+
+// Attach 'input' and 'change' event listeners to the search bar and filter dropdowns
+if (searchBar) {
+  searchBar.addEventListener("input", filterDoctorsOnChange);
+}
+if (filterTime) {
+  filterTime.addEventListener("change", filterDoctorsOnChange);
+}
+if (filterSpecialty) {
+  filterSpecialty.addEventListener("change", filterDoctorsOnChange);
+}

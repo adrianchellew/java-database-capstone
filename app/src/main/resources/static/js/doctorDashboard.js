@@ -52,3 +52,86 @@
     - Call renderContent() (assumes it sets up the UI layout)
     - Call loadAppointments() to display today's appointments by default
 */
+/*
+  This script manages the doctor's dashboard, handling the display and filtering of patient appointments.
+
+  Import necessary service and component functions.
+*/
+import { getAllAppointments } from "./services/patientServices.js";
+import { createPatientRow } from "./components/patientRow.js";
+import { renderHeader } from "./components/header.js";
+import { renderFooter } from "./components/footer.js";
+
+// DOM element selectors
+const appointmentTableBody = document.getElementById("appointmentTableBody");
+const searchBar = document.getElementById("searchBar");
+const datePicker = document.getElementById("datePicker");
+const todayBtn = document.getElementById("todayBtn");
+
+// State variables for filtering
+let selectedDate = new Date().toISOString().slice(0, 10);
+const token = localStorage.getItem("token");
+let patientName = null;
+
+/**
+ * Fetches and displays patient appointments based on current filters.
+ * @returns {Promise<void>}
+ */
+async function loadAppointments() {
+  if (!token) {
+    alert("Authentication token not found. Please log in again.");
+    window.location.href = "/";
+    return;
+  }
+  try {
+    const appointments = await getAllAppointments(token, patientName, selectedDate);
+    appointmentTableBody.innerHTML = ""; // Clear existing rows
+    if (appointments.length > 0) {
+      appointments.forEach((appointment) => {
+        const row = createPatientRow(appointment);
+        appointmentTableBody.appendChild(row);
+      });
+    } else {
+      appointmentTableBody.innerHTML =
+        '<tr><td colspan="5">No appointments found for the selected date.</td></tr>';
+    }
+  } catch (error) {
+    console.error("Error loading appointments:", error);
+    appointmentTableBody.innerHTML =
+      '<tr><td colspan="5">Failed to load appointments. Please try again later.</td></tr>';
+  }
+}
+
+// Event Listeners
+document.addEventListener("DOMContentLoaded", () => {
+  renderHeader();
+  renderFooter();
+  datePicker.value = selectedDate;
+  loadAppointments();
+});
+
+// Search bar listener for filtering by patient name
+if (searchBar) {
+  searchBar.addEventListener("input", (e) => {
+    const name = e.target.value.trim();
+    patientName = name === "" ? null : name;
+    loadAppointments();
+  });
+}
+
+// "Today" button listener to reset the date filter
+if (todayBtn) {
+  todayBtn.addEventListener("click", () => {
+    selectedDate = new Date().toISOString().slice(0, 10);
+    datePicker.value = selectedDate;
+    loadAppointments();
+  });
+}
+
+// Date picker listener for filtering by date
+if (datePicker) {
+  datePicker.addEventListener("change", (e) => {
+    selectedDate = e.target.value;
+    loadAppointments();
+  });
+}
