@@ -1,0 +1,13 @@
+### Section 1: Architecture Summary
+
+This Spring Boot application uses a classic three-tier architecture that leverages both **MVC (Model-View-Controller)** and **REST controllers**. **Thymeleaf** templates are used for the Admin and Doctor dashboards, providing server-rendered views, while **RESTful APIs** serve all other modules, such as Appointments and Patient Records, returning JSON data to various clients. The application interacts with two distinct databases: **MySQL** for structured relational data (like patient, doctor, appointment, and admin records), and **MongoDB** for flexible, document-based data, specifically for prescriptions. All controllers route requests through a common **Service Layer**, which contains the core business logic and validations. This layer in turn delegates to the appropriate repositories. Data persistence is achieved using **JPA Entities** for MySQL and **Document Models** for MongoDB, ensuring efficient and appropriate data handling for each type of persistence.
+
+### Section 2: Numbered Flow of Data and Control
+
+1.  **User Interface Layer**: The user accesses the system via the Admin/Doctor **Thymeleaf Dashboards** or through an API client interacting with **REST API endpoints** for modules like Appointments.
+2.  **Controller Layer**: The request is routed to the appropriate backend component: a **Thymeleaf Controller** for MVC views or a **REST Controller** for API calls.
+3.  **Service Layer**: The Controller delegates the request to the central Service Layer, which enforces business logic, applies validations, and manages transactions.
+4.  **Repository Layer**: The Service Layer communicates with the appropriate repository interface: the **MySQL Repository** (for relational data) or the **MongoDB Repository** (for document data).
+5.  **Database Access**: The repository executes the query against the underlying **MySQL Database** (for entities like Patient/Appointment) or the **MongoDB Database** (for documents like Prescriptions).
+6.  **Model Binding**: Data returned from the database is mapped back into Java model classes: **JPA Entities** (for MySQL) or **Document Objects** (for MongoDB).
+7.  **Response Generation**: The bound models are used to construct the final response. For MVC, models are passed to **Thymeleaf Templates** for HTML rendering. For REST, models are serialized into **JSON** and returned to the client.
