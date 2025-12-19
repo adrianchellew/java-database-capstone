@@ -1,6 +1,10 @@
 // patientServices
 import { API_BASE_URL } from "../config/config.js";
+<<<<<<< HEAD
 const PATIENT_API = API_BASE_URL + '/patient';
+=======
+const PATIENT_API = API_BASE_URL + '/patient'
+>>>>>>> a7ed0a5c599ed8819f6e24c27bb8ee7a2edfae78
 
 
 //For creating a patient in db

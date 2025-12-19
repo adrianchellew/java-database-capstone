@@ -5,6 +5,11 @@ import { createDoctorCard } from './components/doctorCard.js';
 import { filterDoctors } from './services/doctorServices.js';//call the same function to avoid duplication coz the functionality was same
 import { patientSignup, patientLogin } from './services/patientServices.js';
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> a7ed0a5c599ed8819f6e24c27bb8ee7a2edfae78
 document.addEventListener("DOMContentLoaded", () => {
   loadDoctorCards();
 });
