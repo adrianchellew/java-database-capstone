@@ -1,0 +1,44 @@
+# Java-specific exclusions
+**/target/
+**/out/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven and Gradle directories
+.mvn/
+.gradle/
+build/
+
+# IDE files and directories
+.idea/
+.vscode/
+*.iws
+*.iml
+*.ipr
+
+# Version control
+.git/
+.gitignore
+.hg/
+.hgignore
+.svn/
+
+# Log files and temporary files
+logs/
+*.log
+temp/
+tmp/
+hs_err_pid*
+
+# Environment and sensitive files
+.env
+.env.*
+**/credentials
+**/secrets
+**/passphrase*
+# Exclude all dotfiles except the ones needed (if any)
+.*
+!.dockerignore
+!Dockerfile
