@@ -128,7 +128,7 @@ window.loginPatient = async function () {
     }
   }
   catch (error) {
-    alert("❌ Failed to Login : ", error);
+    alert('❌ Failed to Login : ' + error);
     console.log("Error :: loginPatient :: ", error)
   }
 
