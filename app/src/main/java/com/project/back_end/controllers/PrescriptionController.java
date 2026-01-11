@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("${api.path}" + "/prescription")
+@RequestMapping("${api.path}" + "prescription")
 public class PrescriptionController {
 
     private final PrescriptionService prescriptionService;

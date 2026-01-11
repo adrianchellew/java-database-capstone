@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/appointments")
+@RequestMapping("appointments")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
