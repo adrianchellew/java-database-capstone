@@ -30,6 +30,9 @@ public class Appointment {
     @NotNull
     private int status;
 
+    public Appointment() {
+    }
+
     public Appointment(Long id, Doctor doctor, Patient patient, LocalDateTime appointmentTime, int status) {
         this.id = id;
         this.doctor = doctor;

@@ -59,18 +59,18 @@ public class Service {
 
     // 3. filterDoctor: Filters doctors based on name, specialty, and time criteria
     public Map<String, Object> filterDoctor(String name, String specialty, String time) {
-        if (name != null && specialty != null && time != null) {
-            return doctorService.filterDoctorsByNameSpecialityAndTime(name, specialty, time);
-        } else if (name != null && time != null) {
+        if ((name != null && !name.isEmpty() && !name.equals("null")) && (specialty != null && !specialty.isEmpty() && !specialty.equals("null")) && (time != null && !time.isEmpty() && !time.equals("null"))) {
+            return doctorService.filterDoctorsByNameSpecialtyAndTime(name, specialty, time);
+        } else if ((name != null && !name.isEmpty() && !name.equals("null")) && (time != null && !time.isEmpty() && !time.equals("null"))) {
             return doctorService.filterDoctorByNameAndTime(name, time);
-        } else if (name != null && specialty != null) {
-            return doctorService.filterDoctorByNameAndSpeciality(name, specialty);
-        } else if (specialty != null && time != null) {
-            return doctorService.filterDoctorByTimeAndSpeciality(specialty, time);
-        } else if (name != null) {
+        } else if ((name != null && !name.isEmpty() && !name.equals("null")) && (specialty != null && !specialty.isEmpty() && !specialty.equals("null"))) {
+            return doctorService.filterDoctorByNameAndSpecialty(name, specialty);
+        } else if ((specialty != null && !specialty.isEmpty() && !specialty.equals("null")) && (time != null && !time.isEmpty() && !time.equals("null"))) {
+            return doctorService.filterDoctorByTimeAndSpecialty(specialty, time);
+        } else if (name != null && !name.isEmpty() && !name.equals("null")) {
             return doctorService.findDoctorByName(name);
-        } else if (specialty != null) {
-            return doctorService.filterDoctorBySpeciality(specialty);
+        } else if (specialty != null && !specialty.isEmpty() && !specialty.equals("null")) {
+            return doctorService.filterDoctorBySpecialty(specialty);
         } else {
             return doctorService.filterDoctorsByTime(time);
         }

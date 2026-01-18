@@ -138,9 +138,9 @@ public class DoctorService {
         return response;
     }
 
-    // 8. filterDoctorsByNameSpecialityAndTime
+    // 8. filterDoctorsByNameSpecialtyAndTime
     @Transactional(readOnly = true)
-    public Map<String, Object> filterDoctorsByNameSpecialityAndTime(String name, String specialty, String amOrPm) {
+    public Map<String, Object> filterDoctorsByNameSpecialtyAndTime(String name, String specialty, String amOrPm) {
         List<Doctor> doctors = doctorRepository.findByNameContainingIgnoreCaseAndSpecialtyIgnoreCase(name, specialty);
         List<Doctor> filteredDoctors = filterDoctorByTime(doctors, amOrPm);
 
@@ -161,18 +161,18 @@ public class DoctorService {
         return response;
     }
 
-    // 10. filterDoctorByNameAndSpeciality
+    // 10. filterDoctorByNameAndSpecialty
     @Transactional(readOnly = true)
-    public Map<String, Object> filterDoctorByNameAndSpeciality(String name, String specialty) {
+    public Map<String, Object> filterDoctorByNameAndSpecialty(String name, String specialty) {
         List<Doctor> doctors = doctorRepository.findByNameContainingIgnoreCaseAndSpecialtyIgnoreCase(name, specialty);
         Map<String, Object> response = new HashMap<>();
         response.put("doctors", doctors);
         return response;
     }
 
-    // 11. filterDoctorByTimeAndSpeciality
+    // 11. filterDoctorByTimeAndSpecialty
     @Transactional(readOnly = true)
-    public Map<String, Object> filterDoctorByTimeAndSpeciality(String specialty, String amOrPm) {
+    public Map<String, Object> filterDoctorByTimeAndSpecialty(String specialty, String amOrPm) {
         List<Doctor> doctors = doctorRepository.findBySpecialtyIgnoreCase(specialty);
         List<Doctor> filteredDoctors = filterDoctorByTime(doctors, amOrPm);
 
@@ -181,9 +181,9 @@ public class DoctorService {
         return response;
     }
 
-    // 12. filterDoctorBySpeciality
+    // 12. filterDoctorBySpecialty
     @Transactional(readOnly = true)
-    public Map<String, Object> filterDoctorBySpeciality(String specialty) {
+    public Map<String, Object> filterDoctorBySpecialty(String specialty) {
         List<Doctor> doctors = doctorRepository.findBySpecialtyIgnoreCase(specialty);
         Map<String, Object> response = new HashMap<>();
         response.put("doctors", doctors);
@@ -194,7 +194,7 @@ public class DoctorService {
     @Transactional(readOnly = true)
     public Map<String, Object> filterDoctorsByTime(String amOrPm) {
         List<Doctor> doctors = doctorRepository.findAll();
-        List<Doctor> filteredDoctors = filterDoctorByTime(doctors, amOrPm);
+        List<Doctor> filteredDoctors = filterDoctorByTime(doctors, amOrPm); //
 
         Map<String, Object> response = new HashMap<>();
         response.put("doctors", filteredDoctors);
@@ -203,24 +203,17 @@ public class DoctorService {
 
     // Helper: filterDoctorByTime (Private method)
     private List<Doctor> filterDoctorByTime(List<Doctor> doctors, String amOrPm) {
+        // Check for Java null or the literal "null" string passed from the controller
+        if (amOrPm == null || "null".equalsIgnoreCase(amOrPm)) {
+            return doctors;
+        }
+
         return doctors.stream()
-                .filter(doctor -> {
-                    for (String slot : doctor.getAvailableTimes()) {
-                        // Extract hour from slot "HH:mm-HH:mm"
-                        try {
-                            int hour = Integer.parseInt(slot.split(":")[0]);
-                            if ("AM".equalsIgnoreCase(amOrPm) && hour < 12) {
-                                return true;
-                            }
-                            if ("PM".equalsIgnoreCase(amOrPm) && hour >= 12) {
-                                return true;
-                            }
-                        } catch (NumberFormatException e) {
-                            // ignore invalid format
-                        }
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
+            .filter(doctor -> {
+                List<String> times = doctor.getAvailableTimes();
+                // Matches the slot string (e.g., "09:00-10:00") exactly
+                return times != null && times.contains(amOrPm);
+            })
+            .collect(Collectors.toList());
     }
 }

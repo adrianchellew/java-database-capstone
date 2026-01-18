@@ -112,7 +112,7 @@ public class AppointmentService {
                     doctor.getId(), startOfDay, endOfDay);
 
             // Filter by patient name if provided
-            if (pname != null && !pname.isEmpty()) {
+            if (pname != null && !pname.isEmpty() && !pname.equals("null")) {
                 appointments = appointments.stream()
                         .filter(a -> a.getPatient().getName().toLowerCase().contains(pname.toLowerCase()))
                         .collect(Collectors.toList());

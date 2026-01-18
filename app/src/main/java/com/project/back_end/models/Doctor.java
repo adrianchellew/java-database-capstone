@@ -38,7 +38,7 @@ public class Doctor {
     private String phone;
 
     // Each time slot is represented as a string (e.g., "09:00-10:00", "10:00-11:00")
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> availableTimes;
 
     public Long getId() {

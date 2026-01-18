@@ -14,7 +14,7 @@ function loadDoctorCards() {
     .then(doctors => {
       const contentDiv = document.getElementById("content");
       contentDiv.innerHTML = "";
-
+      console.log(doctors);
       doctors.forEach(doctor => {
         const card = createDoctorCard(doctor);
         contentDiv.appendChild(card);

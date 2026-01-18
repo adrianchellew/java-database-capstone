@@ -4,9 +4,11 @@ import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Patient;
 import com.project.back_end.services.PatientService;
 import com.project.back_end.services.Service;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -24,7 +26,7 @@ public class PatientController {
     /**
      * Registers a new patient after checking if they already exist in the system.
      */
-    @PostMapping("/register")
+    @PostMapping
     public int registerPatient(@RequestBody Patient patient) {
         // Validate if the patient already exists by email or phone
         if (service.validatePatient(patient)) {
@@ -49,6 +51,11 @@ public class PatientController {
     public ResponseEntity<Map<String, Object>> getPatientDetails(@PathVariable String token) {
         // Extracts patient info from the token
         return patientService.getPatientDetails(token);
+    }
+
+    @GetMapping("/{id}/{user}/{token}")
+    public ResponseEntity<Map<String, Object>> getPatientAppointments(@PathVariable Long id, @PathVariable String user, @PathVariable String token) {
+        return patientService.getPatientAppointment(id, token);
     }
 
     /**

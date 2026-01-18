@@ -1,3 +1,4 @@
+/* This is the style sheet for the patientDashboard.html */
 .card-actions {
   background-color: #244557;
   padding: 10px;
@@ -75,4 +76,3 @@
   filter: brightness(1.2);
   background-color: #1c3745;
 }
-  

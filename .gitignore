@@ -130,3 +130,9 @@ dmypy.json
 
 # IntelliJ IDE
 .idea/
+
+# Docker files
+.docker-compose.yml
+
+# Java
+app/target/

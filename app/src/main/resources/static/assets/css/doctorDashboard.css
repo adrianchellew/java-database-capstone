@@ -1,54 +1,50 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; font-family: Arial, sans-serif; }
-
+/* This is the style sheet for the doctorDashboard.html */
 .table-header {
     font-size: 24px;
-    color:#015c5d;
-    margin-bottom: 30;
+    color: #015c5d;
+    maring-bottom: 30px;
     margin-right: 0;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    border-spacing: 0;
     font-family: sans-serif;
     margin-top: 20px;
 }
 
 thead {
-    background: #33333310;
+    background-color: #33333310;
     color: #fff;
 }
 
-td, td {
+td, th {
     padding: 12px 16px;
     text-align: center;
     border-bottom: 1px solid #ddd;
 }
 
-tr:nth-child(even) {
-    background: #f9f9f959;
+tr:nth-child(odd) {
+    background-color: #ffffffc0;
 }
 
-tr:nth-child(odd) {
-    background: #ffffffc0;
+tr:nth-child(even) {
+    background-color: #f9f9f959;
 }
 
 tr:hover {
-    background: #015c5d39;
+    background-color: #015c5d39;
 }
 
 .prescription-btn {
-    width: 30px;
-    height: 30px;
+    width:30px;
+    height:30px;
     cursor: pointer;
-    transition: all 2s ease;
+    transition: all;
 }
 
 .prescription-btn:hover {
     transform: scale(1.1);
-    filter: brightness(1.2);
 }
 
 .prescription-btn:active {
@@ -56,9 +52,9 @@ tr:hover {
 }
 
 .noPatientRecord {
-    font-size: 16px;
     font-style: italic;
-    color: gray;
+    font-size: 16px;
+    color: grey;
 }
 
 .today-btn {
@@ -69,7 +65,7 @@ tr:hover {
 
 .date-picker {
     margin-left: 10px;
-    margin-top:13px;
+    margin-top: 13px;
     border-radius: 8px;
     padding: 10px;
     height: 30px;

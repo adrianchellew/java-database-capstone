@@ -1,67 +1,76 @@
-import { openModal } from './components/modals.js';
-import { getDoctors, filterDoctors, saveDoctor } from './services/doctorServices.js';
-import { createDoctorCard } from './components/doctorCard.js';
+import {openModal} from './components/modals.js';
+import {getDoctors, filterDoctors, saveDoctor} from './services/doctorServices.js';
+import {createDoctorCard} from './components/doctorCard.js';
 
-
-document.getElementById('addDocBtn').addEventListener('click', () => {
+document.getElementById('addDocBtn').addEventListener('click', (e) => {
     openModal('addDoctor');
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadDoctorCards();
 });
 
 function renderDoctorCards(doctors) {
     const contentDiv = document.getElementById('content');
     contentDiv.innerHTML = '';
     for (const doctor of doctors) {
-        contentDiv.append(createDoctorCard(doctor));
+        contentDiv.appendChild(createDoctorCard(doctor));
     }
 }
 
-function loadDoctorCards() {
-    const doctors = getDoctors();
-    if (doctors.length > 0) {
-        renderDoctorCards(doctors);
-    }
-}
-
-window.onload = function() {
-    loadDoctorCards();
-}
-
-function filterDoctorsOnChange() {
-    const name = document.getElementById('searchBar').value;
-    const time = document.getElementById('filterTime').value;
-    const speciality = document.getElementById('filterSpeciality').value;
-    const doctors = filterDoctors(name, time, speciality);
-    if (doctors.length > 0) {
-        renderDoctorCards(doctors);
-    } else {
-        document.getElementById('content').innerHTML = 'No doctors found with the given filters.';
-    }
+async function loadDoctorCards() {
+    const doctors = await getDoctors();
+    renderDoctorCards(doctors);
 }
 
 document.getElementById('searchBar').addEventListener('input', filterDoctorsOnChange);
 document.getElementById('filterTime').addEventListener('change', filterDoctorsOnChange);
 document.getElementById('filterSpecialty').addEventListener('change', filterDoctorsOnChange);
 
-function adminAddDoctor() {
-    const doctor = {
-        name: document.getElementById('doctorName').value,
-        speciality: document.getElementById('specialization').value,
-        email: document.getElementById('doctorEmail').value,
-        password: document.getElementById('doctorPassword').value,
-        phone: document.getElementById('doctorPhone').value,
-        availableTimes: []
-    };
+async function filterDoctorsOnChange() {
+    const name = document.getElementById('searchBar');
+    const time = document.getElementById('filterTime');
+    const specialty = document.getElementById('filterSpecialty')
+    const filteredDoctors = await filterDoctors();
+    if (filteredDoctors.doctors.length === 0) {
+        alert('No doctors found');
+    } else {
+        renderDoctorCards(filteredDoctors.doctors);
+    }
+}
 
-    document.getElementsByName('availability').forEach(availableTime => {
-        doctor.availableTimes.push(availableTime.value);
-    });
+async function adminAddDoctor() {
+    const name = document.getElementById('doctorName').value;
+    const speciality = document.getElementById('specialization').value;
+    const email = document.getElementById('doctorEmail').value;
+    const password = document.getElementById('doctorPassword').value;
+    const phone = document.getElementById('doctorPhone').value;
+    const availableTimes = Array.from(
+        document.querySelectorAll('input[type="checkbox"]:checked'),
+        (input) => input.value
+    );
 
     const token = localStorage.getItem('token');
-    const result = saveDoctor(doctor, token)
-    if (result.success) {
-        alert(result.message);
-        document.getElementById('modal').style.display = 'none';
+
+    if (!token) {
+        alert('No token found.');
     } else {
-        alert(result.message);
+        const doctor = {
+            name: name,
+            speciality: speciality,
+            email: email,
+            password: password,
+            phone: phone,
+            availableTimes: availableTimes
+        };
+        const result = await saveDoctor(doctor, token);
+        if (result.success) {
+            alert(result.message);
+            document.getElementById('modal').style.display = 'none';
+            location.reload();
+        } else {
+            alert(result.message);
+        }
     }
+
 }

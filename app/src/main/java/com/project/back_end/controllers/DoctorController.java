@@ -10,11 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("${api.path}" + "doctor")
+@RequestMapping("${api.path}/doctor")
 public class DoctorController {
     private final DoctorService doctorService;
     private final Service service;
@@ -57,9 +58,27 @@ public class DoctorController {
      * 3. Add Doctor
      * Saves a new doctor to the database.
      */
-    @PostMapping
-    public int addDoctor(@RequestBody Doctor doctor) {
-        return doctorService.saveDoctor(doctor);
+    @PostMapping("/{token}")
+    public ResponseEntity<Map<String, String>> addDoctor(@PathVariable String token, @RequestBody Doctor doctor) {
+
+        if (service.validateToken(token, "admin") != null) {
+            return service.validateToken(token, "admin");
+        }
+
+        Map<String, String> response = new HashMap<>();
+
+        int result = doctorService.saveDoctor(doctor);
+
+        if (result == 1) {
+            response.put("message", "Doctor added to db");
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } else if (result == -1) {
+            response.put("message", "Doctor already exists");
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+
+        response.put("message", "Some internal error occurred");
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -75,9 +94,27 @@ public class DoctorController {
      * 5. Delete Doctor
      * Deletes a doctor and their associated appointments by ID.
      */
-    @DeleteMapping("/{id}")
-    public int deleteDoctor(@PathVariable long id) {
-        return doctorService.deleteDoctor(id);
+    @DeleteMapping("/{id}/{token}")
+    public ResponseEntity<Map<String, String>> deleteDoctor(@PathVariable long id, @PathVariable String token) {
+
+        if (service.validateToken(token, "admin") != null) {
+            return service.validateToken(token, "admin");
+        }
+
+        Map<String, String> response = new HashMap<>();
+
+        int result = doctorService.deleteDoctor(id);
+
+        if (result == 1) {
+            response.put("message", "Doctor updated");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else if (result == -1) {
+            response.put("message", "Doctor not found");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        response.put("message", "Some internal error occurred");
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -93,11 +130,11 @@ public class DoctorController {
      * 7. Filter Doctors
      * Filters doctors based on optional name, specialty, and time.
      */
-    @GetMapping("/filter")
+    @GetMapping("/filter/{name}/{time}/{specialty}")
     public Map<String, Object> filterDoctors(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String specialty,
-            @RequestParam(required = false) String time) {
+            @PathVariable String name,
+            @PathVariable String time,
+            @PathVariable String specialty) {
         return service.filterDoctor(name, specialty, time);
     }
 }

@@ -1,13 +1,12 @@
-import { showBookingOverlay } from '../loggedPatient';
-import { deleteDoctor } from '../services/doctorServices.js';
-import { getPatientData } from '../services/patientServices.js';
+import {deleteDoctor} from '../services/doctorServices.js';
+import {getPatientData} from '../services/patientServices.js';
+import {showBookingOverlay} from '../loggedPatient.js';
 
 export function createDoctorCard(doctor) {
-
     const card = document.createElement('div');
     card.classList.add('doctor-card');
 
-    const role = localStorage.getItem('userRole');
+    const role = localStorage.getItem('role');
 
     const infoDiv = document.createElement('div');
     infoDiv.classList.add('doctor-info');
@@ -15,17 +14,17 @@ export function createDoctorCard(doctor) {
     const name = document.createElement('h3');
     name.textContent = doctor.name;
 
-    const specialization = document.createElement('h3');
-    specialization.textContent = doctor.specialization;
+    const specialty = document.createElement('h3');
+    specialty.textContent = doctor.specialty;
 
     const email = document.createElement('h3');
     email.textContent = doctor.email;
 
     const availability = document.createElement('h3');
-    availability.textContent = doctor.availability.join(', ');
+    availability.textContent = doctor.availableTimes.join(', ');
 
     infoDiv.appendChild(name);
-    infoDiv.appendChild(specialization);
+    infoDiv.appendChild(specialty);
     infoDiv.appendChild(email);
     infoDiv.appendChild(availability);
 
@@ -36,21 +35,20 @@ export function createDoctorCard(doctor) {
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'Delete';
         removeBtn.addEventListener('click', async () => {
-            const userConfirmed = confirm('Are you sure you want to perform this action?');
-            if (userConfirmed) {
+            if (confirm(`Are you sure you want to delete ${doctor.name}`)) {
                 const token = localStorage.getItem('token');
-                const result = await deleteDoctor(token);
-                if (result.success) {
-                    card.remove();
-                }
+                deleteDoctor(token);
+                card.remove();
             }
         });
+        actionsDiv.appendChild(removeBtn);
     } else if (role === 'patient') {
         const bookNow = document.createElement('button');
         bookNow.textContent = 'Book Now';
         bookNow.addEventListener('click', () => {
-            alert('Patient needs to login first.');
+            alert('Patient needs to log in first.');
         });
+        actionsDiv.appendChild(bookNow);
     } else if (role === 'loggedPatient') {
         const bookNow = document.createElement('button');
         bookNow.textContent = 'Book Now';
