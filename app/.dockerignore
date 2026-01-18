@@ -6,7 +6,7 @@ build/
 .gradle/
 
 # IDE files and directories
-.idea/
+../.idea/
 *.iml
 *.iws
 out/
