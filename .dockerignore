@@ -1,0 +1,26 @@
+# Maven build output
+target/
+
+# Gradle build output
+build/
+.gradle/
+
+# IDE files and directories
+.idea/
+*.iml
+*.iws
+out/
+
+# Version control
+.git/
+.gitignore
+
+# Log files and temporary files
+*.log
+hs_err_pid*
+test*
+
+# Environment files and sensitive data
+.env
+.DS_Store
+**/Thumbs.db
